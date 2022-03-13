@@ -1,0 +1,317 @@
+~~~~~~~~~~~~~~~~~~~~~~~~EX 1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+CREATE TABLE comments (
+	id NUMBER(10),
+	article_comment VARCHAR2(20),
+	idarticle NUMBER(10),
+	iduser NUMBER(10));
+
+ALTER TABLE comments ADD CONSTRAINT pk_comments PRIMARY KEY(id);
+
+
+CREATE TABLE articles (
+	id NUMBER(10),
+	iduser NUMBER(10),
+	title VARCHAR2(20),
+	content VARCHAR2(20));
+
+ALTER TABLE articles ADD CONSTRAINT pk_articles PRIMARY KEY(id);
+
+ALTER TABLE comments ADD CONSTRAINT fk_comments_articles FOREIGN KEY(idarticle)
+ REFERENCES articles(id);
+
+CREATE TABLE tags_articles (
+	idarticle NUMBER(10),
+	idtag NUMBER(10));
+
+ALTER TABLE tags_articles ADD CONSTRAINT pk_tags_articles PRIMARY KEY(idtag);
+
+CREATE TABLE users (
+	id NUMBER(10),
+	username VARCHAR2(20),
+	password VARCHAR2(20));
+
+ALTER TABLE users ADD CONSTRAINT pk_users PRIMARY KEY(id);
+
+ALTER TABLE comments ADD CONSTRAINT fk_comments_articles FOREIGN KEY(iduser)
+ REFERENCES users(id);
+
+
+CREATE TABLE tags (
+	id NUMBER(10),
+	tagname VARCHAR2(20));
+
+ALTER TABLE tags ADD CONSTRAINT pk_tags PRIMARY KEY(id);
+
+ALTER TABLE tags_articles ADD CONSTRAINT fk_tagsart_tags FOREIGN KEY(idtag)
+ REFERENCES tags(id);
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~EX 2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CREATE TABLE recipes (
+	id_recipe NUMBER(10),
+	title VARCHAR2(20),
+	instructions VARCHAR2(20));
+
+ALTER TABLE recipes ADD CONSTRAINT pk_recipes PRIMARY KEY(id_recipes);
+
+CREATE TABLE link (
+	id_recipe NUMBER(10),
+	id_ingerdient NUMBER(10),
+	quantity NUMBER(10),
+	mu VARCHAR(20));
+
+ALTER TABLE link ADD CONSTRAINT pk_link PRIMARY KEY(id_recipe);
+
+ALTER TABLE recipes ADD CONSTRAINT fk_recipes_link FOREIGN KEY(id_recipe)
+ REFERENCES link(id_recipe);
+
+CREATE TABLE ingredients (
+	id_ingredient NUMBER(10),
+	id_category NUMBER(10),
+	ingredient VARCHAR2(20));
+
+ALTER TABLE ingredients ADD CONSTRAINT pk_ingredients PRIMARY KEY(id_ingredient);
+
+ALTER TABLE link ADD CONSTRAINT fk_link_ingredients FOREIGN KEY(id_ingredient)
+ REFERENCES ingredients(id_ingredient);
+
+CREATE TABLE categories (
+	id_category NUMBER(10),
+	category VARCHAR2(20));
+
+ALTER TABLE categories ADD CONSTRAINT pk_categories PRIMARY KEY(id_category);
+
+ALTER TABLE ingredients ADD COMSTRAINT fl_ingredients_categories FOREIGN KEY(id_category)
+ REFERENCES categories(id_category);
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~EX 3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CREATE TABLE producers (
+	id_producer NUMBER(10),
+	name VARCHAR2(20));
+
+ALTER TABLE producers ADD CONSTRAINT pk_producers PRIMARY KEY(id_producers);
+
+CREATE TABLE cars (
+	id_car NUMBER(10),
+	id_producer NUMBER(10),
+	id_type NUMBER(10),
+	registration_no VARCHAR2(20),
+	year NUMBER(10));
+
+ALTER TABLE cars ADD CONSTARINT pk_cars PRIMARY KEY(id_car);
+
+ALTER TABLE cars ADD CONSTRAINT fk_cars_producers FOREIGN KEY(id_producer)
+ REFERENCE producers(id_producers); 
+
+CREATE TABLE car_types (
+	id_type NUMBER(10),
+	type VARCHAR2(20));
+
+ALTER TABLE car_types ADD CONSTRAINT pk_car_types PRIMARY KEY(id_type);
+
+ALTER TABLE cars ADD CONSTRAINT fk_cars_car_types FOREIGN KEY(id_type)
+ REFERENCE car_types(id_type);
+
+CREATE TABLE car_drivers (
+	id_driver NUMBER(10),
+	id_car NUMBER(10),
+	date DATE NOT NULL);
+
+ALTER TABLE car_drivers ADD CONSTRAINT pk_car_drivers PRIMARY KEY(id_driver);
+
+CREATE TABLE drivers (
+	id_driver NUMBER(10),
+	name VARCHAR2(20),
+	age NUMBER(2));
+
+ALTER TABLE drivers ADD CONSTRAINT pk_drivers PRIMARY KEY(id_driver);
+
+ALTER TABLE car_drivers ADD CONSTRAINT fk_car_drivers_drivers FOREIGN KEY(id_driver)
+ REFERENCES drivers(id_driver);
+
+CREATE TABLE licenses_drivers (
+	id_driver NUMBER(10),
+	id_license NUMBER(10),
+	year NUMBER(4));
+
+ALTER TABLE licenses_drivers ADD CONSTRAINT pk_licenses_drivers PRIMARY KEY(id_driver);
+
+ALTER TABLE licenses_drivers ADD CONSTRAINT fk_licenses_drivers_drivers FOREIGN KEY(id_drivers)
+ REFERENCES drivers(id_driver);
+
+CREATE TABLE licenses (
+	id_licenses NUMBER(10),
+	type VARCHAR2(20));
+
+ALTER TABLE licenses ADD CONSTRAINT pk_licenses PRIMARY KEY(id_licenses);
+
+ALTER TABLE licenses_drivers ADD CONSTRAINT fk_licenses_drivers_licenses FOREIGN KEY(id_license)
+ REFERENCES licenses(id_license);
+
+~~~~~~~~~~~~~~~~~~~~~~~~EX 4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+CREATE TABLE Flower_tyoes (
+	id_type NUMBER(10),
+	type VARCHAR2(20));
+
+ALTER TABLE Flower_types ADD CONSTRAINT pk_flower_types PRIMARY KEY(id_type);
+
+CREATE TABLE Flowers (
+	id_flower NUMBER(10),
+	name VARCHAR2(20),
+	price NUMBER(3,2),
+	color VARCHAR(20),
+	quantity NUMBER(10),
+	id_type NUMBER(10));
+
+ALTER TABLE Flowers ADD CONSTRAINT pk_flowrers PRIMARY KEY(id_flower);
+
+ALTER TABLE Flowers ADD CONSTRAINT fk_flowers_flowers_type FOREIGN KEY(id_flower)
+ REFERENCES Flower_types(id_type);
+
+CREATE TABLE flowers_buquette (
+	id_buquette NUMBER(10),
+	id_flower NUMBER(10),
+	number_flower NUMBER(10));
+
+ALTER TABLE flowers_buquette ADD CONSTRAINT pk_flowers_buquette PRIMARY KEY(id_buquette);
+
+ALTER TABLE flowers_buquette ADD CONSTRAINT fk_flower_buquette_flowers FOREIGN KEY(id_flower)
+ REFERENCES Flowers(id_flower);
+
+CREATE TABLE Buquettes (
+	id_buquette NUMBER(10),
+	name VARCHAR2(20),
+	id_type NUMBER(10));
+
+ALTER TABLE Buquettes ADD CONSTRAINT pk_buquettes PRIMARY KEY(id_buquette);
+
+ALTER TABLE flowers_buquette ADD CONSTRAINT fk_flowers_buquette_buquette FOREIGN KEY(id_buquette)
+ REFERENCES Buquettes(id_buquette);
+
+CREATE TABLE Buquette_types (
+	id_type NUMBER(10),
+	type VARCHAR2(20));
+
+ALTER TABLE Buquette_types ADD CONSTRAINT pk_buquette_types PRIMARY KEY(id_type);
+
+ALTER TABLE Buquettes ADD CONSTRAINT fk_buquettes_buquette_types FOREIGN KEY(id_buquette)
+ REFERENCE Buquette_types(id_type);
+
+~~~~~~~~~~~~~~~~~~~~~~~~EX 5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CREATE TABLE BOOKS_TYPES (
+	ID_TYPE NUMBER(10),
+	TYPE VARCHAR2(20));
+
+ALTER TABLE BOOKS_TYPES ADD CONSTRAINT PK_BOOKS_TYPES PRIMARY KEY(ID_TYPE);
+
+CREATE TABLE BOOKS (
+	ID_BOOK NUMBER(10),
+	ID_TYPE NUMBER(10),
+	ID_PUBLISHER NUMBER(10),
+	TITLE VARCHAR2(20),
+	NO_PAGES NUMBER(10),
+	PUBLISHING_YEAR NUMBER(4));
+
+ALTER TABLE BOOKS ADD CONSTRAINT PK_BOOKS PRIMARY KEY(ID_BOOK);
+
+ALTER TABLE BOOKS ADD CONSTRAINT FK_BOOKS_BOOK_TYPES FOREIGN KEY(ID_TYPE)
+ REFERENCES BOOK_TYPES(ID_TYPE);
+
+CREATE TABLE BOOKS_AUTHORS (
+	ID_BOOK NUMBER(10),
+	D_AUTHOR NUMBER(10));
+
+ALTER TABLE BOOKS_AUTHORS ADD CONSTRAINT PK_BOOKS_AUTHORS PRIMARY KEY(ID_BOOK);
+
+ALTER TABLE BOOKS_AUTHORS ADD CONSTRAINT FK_BOOKS_AUTHORS FOREIGN KEY(ID_BOOK)
+ REFERENCES BOOKS(ID_BOOK);
+
+CREATE TABLE AUTHORS (
+	ID_AUTHORS NUMBER(10),
+	FIRSTNAME VARCHAR2(20),
+	LASTNAME VARCHAR(20));
+
+ALTER TABLE AUTHORS ADD CONSTAINT PK_AUTHORS PRIMARY KEY(ID_AUTHORS);
+
+ALTER TABLE BOOKS_AUTHORS ADD CONSTRAINT FK_BOOKS_AUTHORS_AUTHORS FOREIGN KEY(ID_AUTHOR)
+ REFERENCES AUTHORS(ID_AUTHORS);
+
+CREATE TABLE PUBLISHERS (
+	ID_PUBLISHER NUMBER(10),
+	NAME VARCHAR2(20));
+
+ALTER TABLE PUBLISHERS ADD CONSTARINT PK_PUBLISHERS PRIMARY KEY(ID_PUBLISHER);
+
+ALTER TABLE BOOKS ADD CONSTRAINT FK_BOOKS_PUBLISHERS FOREIGN KEY(ID_PUBLISHER)
+ REFERENCES PUBLISHERS(ID_PUBLISHER);
+
+~~~~~~~~~~~~~~~~~~~~~~~~EX 6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+CREATE TABLE CATEGROIES (
+	ID_CATEGORY NUMBER(10),
+	CATEGORY VARCHAR2(20));
+
+ALTER TABLE CATEGORIES ADD CONSTRAIMT PK_CATEGORIES PRIMARY KEY(ID_CATEGORY);
+
+CREATE TABLE SONGS (
+	ID_SONG NUMBER(10),
+	ID_CATEGORY NUMBER(10),
+	ID_ALBUM NUMBER(10),
+	TITLE VARCHAR2(20),
+	LENGTH NUMBER(10),
+	CONTENT VARCHAR2(20));
+
+ALTER TABLE SONGS ADD CONSTRAINT PK_SONGS PRIMARY KEY (ID_SONG);
+
+ALTER TABLE SONGS ADD CONSTRAINT FK_SONGS_CATEGORIES FOREIGN KEY(ID_CATEGORY)
+ REFERENCES SONGS(ID_CATEGORY);
+
+CREATE TABLE ALBUMS (
+	ID_ALBUM NUMBER(10),
+	TITLE VARCHAR2(20),
+	YEAR NUMBER(10),
+	ID_BAND NUMBER(10));
+
+ALTER TABLE ALBUMS ADD CONSTRAINT PK_ALBUMS PRIMARY KEY(ID_ALBUM);
+
+ALTER TABLE SONGS ADD CONSTRAINT FK_SONGS_ALBUMS FOREIGN KEY(ID_ALBUM)
+ REFERENCES ALBUMS(ID_ALBUM);
+
+CREATE TABLE BANDS (
+	ID_BAND NUMER(10),
+	NAME VARCHAR2(20));
+
+ALTER TABLE BANDS ADD CONSTRAINT PK_BANDS PRIMARY KEY(ID_BAND);
+
+ALTER TABLE ALBUMS ADD CONSTRAINT FK_ALBUMS_BANDS FOREIGN KEY(ID_BAND)
+ REFERENCES BANDS(ID_BANDS);
+
+CREATE TABLE ARTISTS (
+	ID_ARTIST NUMBER(10),
+	ID_BND NUMBER(10),
+	FIRSTNAME VARCHAR2(20),
+	LASTNAME VARCHAR2(20),
+	DATE_OF_BIRTH DATE NOT NULL);
+
+ALTER TABLE ARTISTS ADD CONSTRAINT PK_ARTISTS PRIMARY KEY(ID_ARTIST);
+
+ALTER TABLE ARTISTS ADD CONSTRAINT FK_ARTISTS_BANDS FOREIGN KEY(ID_BAND)
+ REFERENCES BANDS(ID_BAND);
+
+CREATE TABLE COMPOSERS (
+	ID_SONG NUMBER(10),
+	ID_ARTIST NUMBER(10));
+
+ALTER TABLE COMPOSERS ADD CONSTRAINT PK_COMPOSERS PRIMARY KEY(ID_SONG);
+
+ALTER TABLE COMPOSERS ADD CONSTRAINT FK_COMPOSERS_SONGS FOREIGN KEY(ID_SONG)
+ REFERENCES SONGS(ID_SONG);;
+
+ALTER TABLE COMPOSERS ADD CONSTRAINT FK_COMPOSERS_ARTISTS FOREIGN KEY(ID_ARTIST)
+ REFERENCES ARTISTS(ID_ARTIST);
