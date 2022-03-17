@@ -1,0 +1,12 @@
+ex1
+
+Sa se scrie o cerere SQL care face o lista cu totii angajatii subordonati unui sef dar care
+au venit in companie inaintea lui si nu au primit comision. ID sefului, data angajarii sefului se
+introduc de la tastatura.
+aducem doar nume si data angajare
+
+ex2
+
+Sa se aduca inregistrarile din tabela grila salariu care au nivelul inferior mai mare sau egal decat
+o variabila data de la tastatura si nivelul superior mai mare sau egal decat dublul variabilei initiale.
+!!!!fisier 

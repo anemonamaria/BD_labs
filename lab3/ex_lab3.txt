@@ -1,0 +1,50 @@
+
+~~~~~~~~~~~~~~~~~~~~~~~ex1~~~~~~~~~~~~~~~~~~
+
+
+create table angajati as select * from emp;
+
+create table angajati_lab3 (
+	id_ang NUMBER(4),
+	nume VARCHAR(20),
+	functie VARCHAR2(20),
+	id_sef NUMBER(4),
+	data_ang DATE,
+	salariu NUMBER(7,2),
+	comision NUMBER(7,2),
+	id_dep NUMBER(2));
+
+SELECT id_ang, nume, functie, salariu
+	FROM angajati_lab3
+	WHERE id_sef =& if_sef;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~ex2~~~~~~~~~~~~~~~~~~
+
+SELECT nume, '&functie' functie, salariu
+	FROM angajati_lab3
+	WHERE functie = &functie;
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~ex3~~~~~~~~~~~~~~~~~~
+
+SELECT nume, functie, &salariu_anual salariu_anual
+	FROM &tabel
+	WHERE &nume_coloana = &valoare_coloana;
+
+~~~~~~~~~~~~~~~~~~~~~~~ex4~~~~~~~~~~~~~~~~~~
+
+
+SELECT nume, functie, &&venit_lunar venit_lunar
+	FROM angajati_lab3
+	WHERE &venit_lunar > 2000;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~ex5~~~~~~~~~~~~~~~~~~
+
+SELECT id_ang, nume, functie, data_ang
+	FROM angajati_lab3
+	WHERE functie = '&1' AND data_ang > '&2'
+	ORDER BY data_ang;
+

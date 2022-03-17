@@ -1,0 +1,7 @@
+accept variabila char prompt 'Introduceti valoarea variabilei:'
+
+SELECT grad, nivel_inf, nivel_sup
+	FROM grila_salariu
+	WHERE nivel_inf >= '&variabila' AND nivel_sup >= 2*'&variabila';
+
+undefine variabila

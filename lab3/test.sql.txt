@@ -1,0 +1,9 @@
+accept introdu_id_sef char prompt 'Introduceti id-ul sefului:'
+accept introdu_data_angajare_sef char prompt 'Introduceti data angajarii a sefului:'
+
+SELECT nume, data_ang
+	FROM angajati_lab3
+	WHERE data_ang < &introdu_data_angajare AND comision = 0;
+
+undefine introdu_id_sef
+undefine introdu_data_angajare

@@ -1,0 +1,10 @@
+accept departament char prompt 'Introduceti departamentul:'
+accept venit_mediu char prompt 'Introduceti venitul mediu:'
+
+
+SELECT nume, id_dep, 12*salariu venit_anual
+	FROM angajati_lab3
+	WHERE id_dep = &departmanent AND 12*salariu > &venit_mediu;
+
+undefine departament
+undefine venit_mediu
