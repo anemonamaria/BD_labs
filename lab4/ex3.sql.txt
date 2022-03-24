@@ -1,0 +1,10 @@
+accept departament char prompt 'Introduceti departamentul din care vreti sa faca parte angajatii: '
+
+SELECT
+	nume,
+	functie,
+	(salariu + nvl(comision, 0)) * 12 "Venit anual",
+	id_dep
+FROM angajati_lab4
+WHERE (functie != UPPER('manager') OR functie != LOWER('manager'))
+	 AND id_dep = &departament;

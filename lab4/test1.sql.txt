@@ -1,0 +1,8 @@
+SELECT
+	id_ang AS ecuson,
+	nume,
+	functie
+FROM angajati_lab4
+WHERE nume LIKE '%A%' OR nume LIKE '%E%' OR
+	nume LIKE '%I%' OR nume LIKE '%O%' OR
+	nume LIKE '%U%';   

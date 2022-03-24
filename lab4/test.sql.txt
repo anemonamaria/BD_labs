@@ -1,0 +1,6 @@
+SELECT DISTINCT 
+	salariu,
+	id_dep AS departament,
+	nume
+FROM angajati_lab4
+WHERE id_dep = 10;

@@ -1,0 +1,9 @@
+1. Faceti o lista cu toate salariile din depart cu id 10.
+Lista nu tb sa contina duplicate!
+
+2. Selectati toti angajatii al caror nume contine cel 
+putin o vocala.
+
+3. Selectati toti angajatii care au salariul intre 2000 si
+6000 ordonati crescator dupa salarii. Daca au acelasi
+salariu, ordonarea se va face dupa nume invers alfabetica

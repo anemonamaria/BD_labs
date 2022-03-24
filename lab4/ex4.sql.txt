@@ -1,0 +1,13 @@
+accept departament1 char prompt 'Introduceti primul departament din care vreti sa faca parte angajatii: '
+accept departament2 char prompt 'Introduceti al doilea departament din care vreti sa faca parte angajatii: '
+
+SELECT
+	nume,
+	functie,
+	data_ang AS "Data Angajarii",
+	salariu,
+	id_dep
+FROM angajati_lab4
+WHERE (id_dep = &departament1 OR id_dep = &departament2) AND 
+	(data_ang BETWEEN '1-JAN-1981' AND '31-DEC-1981')
+ORDER BY id_dep;
