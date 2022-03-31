@@ -1,0 +1,144 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SELECT nume, functie, den_dep
+FROM angajati, departamente
+WHERE functie = 'ANALYST';
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT 
+	a.id_dep,
+	d.den_dep,
+	a.nume,
+	a.functie
+FROM
+	angajati a,
+	departamente d
+WHERE
+	a.id_dep = d.id_dep
+	AND a.id_dep = 10
+ORDER BY 3;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT
+	id_dep,
+	den_dep,
+	nume,
+	functie
+FROM
+	angajati
+	NATURAL JOIN departamente
+WHERE
+	id_dep = 10
+ORDER BY 3;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT a.nume, a.salariu, g.grad
+FROM angajati a, grila_salariu g
+WHERE
+	a.salariu BETWEEN g.nivel_inf AND g.nivel_sup
+AND a.id_dep = 20;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT a.nume, a.salariu, g.grad, d.den_dep
+FROM angajati a, grila_salariu g, departamente d
+WHERE
+	a.salariu BETWEEN g.nivel_inf AND g.nivel_sup
+	AND d.id_dep = a.id_dep
+AND a.id_dep = 20
+ORDER BY 3, 1;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT
+	a1.nume "Nume Angajat",
+	a1.functie "Functie Angajat",
+	a2.nume "Nume Sef",
+	a2.functie "Functie Sef"
+FROM
+	angajati a1,
+	angajati a2
+WHERE
+	a1.id_sef = a2.id_ang
+	AND a1.id_dep = 10;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX7~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SELECT d.id_dep, d.den_dep, a.nume, a.functie
+FROM departamente d, angajati a
+WHERE d.id_dep = a.id_dep(+)
+ORDER BY a.id_dep;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX9~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT a.nume, a.salariu, g.grad
+FROM grila_salariu g
+	FULL OUTER JOIN angajati a
+		ON a.salariu * 2 BETWEEN g.nivel_inf AND g.nivel_sup
+ORDER BY a.nume;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX10~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT d.den_dep, a.nume, a.salariu, g.grad
+FROM grila_salariu g
+	FULL OUTER JOIN angajati a
+		RIGHT OUTER JOIN departamente d
+			ON d.id_dep = a.id_dep
+		ON a.salariu * 2 BETWEEN g.nivel_inf AND g.nivel_sup
+ORDER BY d.den_dep, a.nume, g.grad;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX11~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT id_dep, nume, functie, salariu
+FROM angajati
+WHERE id_Dep = 10
+UNION
+SELECT id_dep, nume, functie, salariu
+FROM angajati
+WHERE id_dep = 30;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX12~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT id_dep, nume, 'are salariul' are, salariu sal_com
+FROM angajati
+WHERE id_dep = 10
+UNION
+SELECT id_dep, nume, 'are comisionul' are, comision sal_com
+FROM angajati
+WHERE id_dep = 30;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX13~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT functie FROM angajati WHERE id_dep = 10
+UNION ALL
+SELECT functie FROM angajati WHERE id_dep = 20;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX14~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT functie, nvl(comision, 0) comision
+	FROM angajati WHERE id_dep = 10
+INTERSECT
+SELECT functie, nvl(comision, 0)
+	FROM angajati WHERE id_dep = 20
+INTERSECT
+SELECT functie, nvl(comision, 0)
+	FROM angajati WHERE id_dep = 30;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX15~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT functie
+	FROM angajati
+	WHERE id_dep = 10
+MINUS 
+SELECT functie
+	FROM angajati
+	WHERE id_dep = 30;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~EX-INDIVIDUAL~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SELECT a.nume, d.den_dep, a.salariu, g.grad, s.nume, d2.den_dep, s.salariu, g2.grad
+FROM angajati a
+	FULL OUTER JOIN angajati s
+		ON a.id_sef = s.id_ang
+	FULL OUTER JOIN grila_salariu g
+		ON a.salariu BETWEEN g.nivel_inf AND g.nivel_sup
+	FULL OUTER JOIN grila_salariu g2
+		ON s.salariu BETWEEN g2.nivel_inf AND g2.nivel_sup
+	FULL OUTER JOIN departamente d
+		ON a.id_dep = d.id_dep
+	FULL OUTER JOIN departamente d2
+		ON s.id_dep = d2.id_dep
+ORDER BY a.nume;
+	

@@ -1,0 +1,16 @@
+SELECT 
+	d.den_dep,
+	s.nume,
+	s.salariu,
+	sub.nume, 	
+	sub.salariu
+FROM 
+	angajati s
+	INNER JOIN departamente d
+		ON s.id_dep = d.id_dep
+	INNER JOIN angajati sub
+		ON sub.id_dep != s.id_dep AND sub.salariu > s.salariu / 2 AND sub.id_sef = s.id_ang;
+
+
+
+

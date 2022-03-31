@@ -1,0 +1,8 @@
+sa se scrie o cererre sql care face o lista cu toti sefii de deppartament care au 
+subalterni in alt departament decat al lor si subalternii au salariul mai mare decat 
+jumatate din salariul lor
+denumire departament sef
+nume sef
+salariu sef
+nume subalter
+salariu subaltern
