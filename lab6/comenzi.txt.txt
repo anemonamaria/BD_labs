@@ -1,0 +1,87 @@
+select translate('oana are mere', 'om', ' p') from dual;
+
+select nume, data_ang, add_months(Data_ang, 3) data_mod from angajati
+where id_dep = 10;
+
+select nume, data_ang, last_day(data_ang) ultima_zi from angajati
+where id_dep = 10;
+
+select next_day('24-MAR-2014', 'MONDAY') urmatoarea_luni from dual;
+
+select nume, data_ang, months_between('01-JAN-2014', data_ang) luni_vechime1,
+months_between(data_ang, '01-JAN-2014') luni_vechime2
+from angajati
+where id_dep = 10;
+
+select data_ang, round(data_ang, 'MONTH') rot_luna from angajati where id_ang = 7369;
+
+
+select data_ang, round(data_ang, 'YEAR') rot_an from angajati where id_ang = 7369;
+
+select data_ang, trunc(data_ang, 'MONTH') rot_luna from angajati where id_ang = 7369;
+
+select sysdate from dual;
+
+select extract(day from sysdate) from dual;
+
+select data_ang, data_ang + 7, data_ang - 7, sysdate - data_ang from angajati
+where data_ang like '%JUN%';
+
+alter session set NLS_DATE_FORMAT='DD-MM-YYYY';
+select sysdate from dual;
+
+alter session set NLS_DATE_FORMAT = 'DD-MM-YYYY HH24:MI:SS';
+select sysdate from dual;
+
+alter session set NLS_DATE_FORMAT='DD-MONTH-YYYY';
+select replace(sysdate, ' ',  '') from dual;
+
+
+--------------------------------------------------------------
+
+select upper(a.nume), to_char(a.data_ang, 'DAY') ziua_angajarii, 
+	initcap(d.den_dep), rpad(s.nume, 1, '*') init_sef
+from angajati a
+	inner join departamente d
+		on a.id_dep = d.id_dep
+	inner join angajati s
+		on a.id_sef = s.id_ang
+where length(a.nume) = 4;
+----------------------------------------------------------------
+
+cerinta test
+
+
+1. sa se scrie o cererer sql care face o lista cu angajatii care primesc o prima de 10%
+din salariu. Prima se acorda in fiecare an, in luna in care s-au angajat in companie. Iar
+criteriile pentru acordarea primei sunt:
+-vechime in companie de peste 25 ani
+-angajatii nu trebuie sa fi primit comision
+
+denumire departament, nume angajat, data angajarii, luna prima, salariu, comision si prima
+-prima trebuie rotunjita fara zecimale
+
+
+select d.den_dep, a.nume, a.data_ang, EXTRACT(MONTH from a.data_ang) luna_prima, a.salariu, a.comision,
+	round(a.salariu / 10) prima
+from angajati a
+	inner join departamente d
+		on d.id_dep = a.id_dep
+where ((a.comision = 0 or a.comision IS null) AND (months_between(sysdate, a.data_ang)) > (25 * 12));
+
+
+
+2. pentru fiecare angajat sa se spuna de cate ori apare litera a in sirul format prin 
+concatenarea numelui, al functiei si al departamentului
+
+
+define sir = 'concat(concat(a.nume, a.functie), d.den_dep)';
+
+select &sir sir, (length(&sir) 
+	- length(replace(&sir, 'A', '')) ) lungime, 
+	replace(&sir, 'A', '') modificat
+from angajati a
+	inner join departamente d
+		on d.id_dep = a.id_dep;
+
+
