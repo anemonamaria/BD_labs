@@ -1,0 +1,135 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select nume, to_char(data_ang, 'dd-mm-yyyy') data_ang
+from angajati
+where to_char(data_ang, 'YYYY') like '1982';
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select nume, functie, salariu, 
+decode (functie, 'MANAGER', salariu * 1.25, 'ANALYST', salariu * 1.24, salariu / 4) prima
+from angajati
+where id_dep = 20
+order by functie;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select nume, functie, salariu, 
+	to_char (data_ang, 'YYYY') an_ang,
+	decode(sign(Data_ang - to_date ('1-JAN-1982')),
+		-1, salariu * 1.23,
+		salariu * 1.10) prima
+from angajati
+where id_dep = 20
+order by functie;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select avg (salariu) salariu from angajati;
+select avg (all salariu) salariu from angajati;
+select avg (distinct salariu) salariu from angajati;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, avg (salariu) from angajati
+group by id_dep
+order by 1;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, avg (salariu + nvl (comision, 0))
+from angajati
+group by id_dep
+having avg (salariu + nvl (comision, 0)) > 2000;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex7~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, count(*) nr_ang,
+	count(salariu) count,
+	count (all salariu) count_all,
+	count (distinct salariu) count_distinct
+from angajati
+group by id_dep
+order by 1;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex8~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep,
+	count (functie) count,
+	count (distinct functie) count_distinct
+from angajati
+group by id_dep
+having count (distinct functie) >= 2
+order by 1;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex9~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select d.den_dep,
+	min (a.salariu) sal_min,
+	min (distinct a.salariu) sal_min_d,
+	max (a.salariu) sal_max,
+	sum (a.salariu) sal_sum,
+	sum (Distinct a.salariu) sal_sum_d
+from angajati a natural join departamente d
+group by d.den_dep
+order by d.den_dep;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex10~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep,
+	variance (salariu) sal_varstd,
+	variance (distinct salariu) sal_varstd_d,
+	stddev (salariu) sal_devstd,
+	stddev (distinct salariu) sal_devstd_d,
+	stddev (comision) com_devstd
+from angajati
+group by id_dep
+order by 1;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex_i1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select a.id_sef, s.nume, count (a.id_ang) nr_ang, d.den_dep, min(a.salariu) sal_min, 
+	avg (a.salariu) sal_mediu, max (a.salariu) sal_max
+from angajati a 
+	inner join angajati s
+		on a.id_sef = s.id_ang
+inner join departamente d
+		on d.id_dep = s.id_dep
+group by a.id_sef, s.nume, d.den_dep, s.id_ang, d.id_dep, s.id_dep
+order by 1;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex_i2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select initcap(a.nume), lower(d.den_dep), to_char(a.data_ang, 'MM-YYYY') data_ang, 
+	decode (g.grad, 2, a.salariu * sqrt(&c * log (2, months_between(sysdate, a.data_ang))),
+			    4, a.salariu * sqrt(&c * log  (3, months_between(sysdate, a.data_ang)))) prima,
+	g.grad, initcap(s.nume), lower(ds.den_dep)
+from angajati a
+	inner join departamente d
+		on d.id_dep = a.id_dep
+	inner join angajati s
+		on a.id_sef = s.id_ang
+	inner join departamente ds
+		on s.id_dep = ds.id_dep
+	full outer join grila_salariu g 	
+		on a.salariu between g.nivel_inf and g.nivel_sup
+where to_char (a.data_ang, 'YYYY') like to_char (s.data_ang, 'YYYY');
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~test~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sa se calculeze vechimea angajatilor din departamentele 10 si 20 .
+id dep, nume angajat, data curenta, data angajarii
+nr de ani vechime, nr de luni peste anii intregi, nr de zile peste lunile intregi
+
+
+select id_dep, nume, sysdate data_curenta, data_ang, 
+	floor(months_between(sysdate, data_ang) / 12) ani_vechime, 
+	round(mod(months_between(sysdate, data_ang), 12)) luni_peste,
+	to_char(sysdate, 'DD') - to_char(data_ang, 'DD') zile_peste
+from angajati
+where id_dep = 10 or id_dep = 20;
+	
