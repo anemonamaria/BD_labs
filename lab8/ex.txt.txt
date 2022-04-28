@@ -1,0 +1,150 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, functie, salariu
+from angajati
+where salariu = (select max(salariu) from angajati);
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, functie, salariu
+from angajati
+where
+	not id_dep = 20 and
+	functie in (select functie 
+			from angajati where id_dep = 20)
+order by functie;
+	
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select nume, functie, data_ang
+from angajati
+where data_ang not in (select distinct(data_ang)
+				from angajati
+				where to_char(data_ang, 'MON') in
+				('DEC', 'JAN', 'FEB'))
+order by nume;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select den_dep, nume, salariu
+from angajati
+	natural join departamente
+where salariu in
+	(select max(salariu)
+	from angajati
+	group by id_dep)
+order by den_dep;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, functie, data_ang
+from angajati
+where
+	(to_char(data_ang, 'YYYY'), functie) in
+	(select to_char(data_ang, 'YYYY'), functie
+	from angajati
+	where lower(nume)='jones');
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, salariu
+from angajati
+where (id_dep, salariu+nvl(comision, 0)) in
+	(select id_dep, min(salariu+nvl(comision, 0))
+		from angajati
+		group by id_dep)
+order by id_dep;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex7~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select nume, functie, data_ang, salariu
+from angajati
+where salariu >
+	(select max(salariu)
+		from angajati
+		where id_dep = 
+			(select id_dep
+				from departamente
+				where lower(den_dep)='sales'));
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex8~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select a.id_dep, a.nume, a.functie, a.salariu
+from angajati a
+where
+	a.salariu > (select avg(b.salariu)
+				from angajati b
+				where b.id_dep = a.id_dep)
+order by a.id_dep;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex9~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+update angajati a
+set (a.salariu, a.comision) =
+	(select a.salariu + avg(b.salariu) * 0.1, avg(b.comision)
+		from angajati b
+		where b.id_dep = a.id_dep)
+where data_ang <= '1-JUN-81';
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex10~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select b.id_dep, a.den_dep, b.max_sal_dep
+from
+	departamente a,
+	(select id_dep, max(salariu) max_sal_dep
+	from angajati
+	group by id_dep) b
+where a.id_dep = b.id_dep
+order by b.id_dep;
+
+select b.id_dep, a.den_dep, b.max_sal_dep
+from
+	departamente a inner join
+		(select id_dep, max(salariu) max_sal_dep
+		from angajati
+		group by id_dep) b
+	on a.id_dep = b.id_dep
+order by b.id_dep;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~individual~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select a.nume, c.den_dep, b.salariu_min
+from angajati a,
+	(select id_dep, min(salariu) salariu_min
+	from angajati
+	group by id_dep) b,
+	(select id_dep, den_dep
+	from departamente) c
+where a.id_dep = c.id_dep and a.salariu = b.salariu_min;	
+
+select a.nume, c.den_dep, b.salariu_min
+from angajati a join
+		departamente c
+			on a.id_dep = c.id_dep,
+	(select id_dep, min(salariu) salariu_min
+	from angajati
+	group by id_dep) b
+where a.salariu = b.salariu_min;	
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~test~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+sa se scrie o cerere sql care face o lista cu angajatii care au salariul mai
+mare decat jumatate din salariul mediu al directorului si analistilor din departamentul
+lor (salariu mediu se calculeaza fara zecimale)  --->use round. functie = manager, analyst
+coloane: den dep, salariu mediu director si analist, nume angajat, salariu angajat
+salariu mediu dir + salariu mediu analist / 2
+
+select b.den_dep, round((c.salariu_mediu + d.salariu)/ 2) salariu_mediu_dir_analyst, a.nume,
+		a.salariu
+from angajati a join
+		departamente b
+			on a.id_dep = b.id_dep,
+	(select id_dep, avg(salariu) salariu_mediu
+		from angajati
+		where lower(functie)='analyst'
+		group by id_dep) c,
+	angajati d
+where a.salariu > round((c.salariu_mediu + d.salariu)/ 2) and lower(d.functie)='manager'
+	and (d.id_dep = a.id_dep or c.id_dep = a.id_dep);
+
+
+join
+		angajati d
+			on d.id_ang = a.id_sef,
