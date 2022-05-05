@@ -1,0 +1,153 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+select d.den_dep,
+	a.functie,
+	count(a.id_ang) nr_ang
+from angajati a
+	natural join departamente d
+group by d.den_dep,
+	a.functie
+having count (a.id_ang) = (select max(count(id_ang))
+					from angajati
+					group by id_dep,
+						functie);
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+define id_dep = 30
+select d.den_dep,
+	a.nume,
+	a.functie,
+	a.comision
+from angajati a
+	inner join departamente d
+	on a.id_dep = d.id_dep
+group by d.den_dep,
+	a.nume,
+	a.functie,
+	a.comision
+having max(a.comision) in (select max(comision) from angajati where id_dep=&id_dep 
+					group by id_dep)
+order by 2;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select a.nume, a.functie, a.data_ang, a.salariu
+from angajati a,
+	(select id_dep, max(salariu) sal_max_dep
+	from angajati
+	group by id_dep) b
+group by a.nume, a.functie, a.data_ang, a.salariu
+having a.salariu = max(b.sal_max_dep)
+order by a.nume;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex4~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select nume nume_ang, 
+	(select nume
+	from angajati
+	where id_ang = a.id_sef) nume_sef
+from angajati a
+where id_dep = 20
+order by nume;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex5~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, functie
+from angajati a
+where id_dep in (10, 20)
+order by (select count(*)
+	from angajati b
+	where a.id_dep = b.id_dep) desc;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex6~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, functie, salariu
+from angajati
+where salariu > some(select distinct salariu
+			from angajati
+			where functie = 'SALESMAN')
+order by id_dep, nume;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex7~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, nume, functie, salariu
+from angajati
+where salariu >= all(select distinct salariu
+			from angajati
+			where functie = 'SALESMAN')
+order by id_dep, nume;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex8~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select d.id_dep, d.den_dep
+from departamente d
+where exists(select nume
+		from angajati
+		where id_dep = d.id_dep)
+order by id_dep;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex9~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, id_ang, nume, functie, id_sef
+from angajati a
+where not exists(select id_sef
+			from angajati
+			where id_ang = a.id_sef)
+order by id_dep;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ex10~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select id_dep, id_ang, nume, functie, id_sef
+from angajati a
+where id_sef not in (select id_sef
+			from angajati
+			where id_ang = a.id_sef)
+order by id_dep;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~exi1~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+select a.functie, a.venit_lunar_mediu
+from (select avg(salariu) venit_lunar_mediu, functie
+	from angajati
+	group by functie) a
+order by functie;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~exi2~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select a.functie, g.grad, a.salariu_mediu
+FROM (select functie, avg(salariu) salariu_mediu
+	from angajati
+	group by functie) a, grila_salariu g
+WHERE
+	a.salariu_mediu BETWEEN g.nivel_inf AND g.nivel_sup;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~exi3~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+select a.nume, a.functie, a.salariu, b.den_dep
+from angajati a
+	join departamente b
+	on b.id_dep = a.id_dep	
+where a.salariu >= all(select distinct salariu
+			from angajati
+			where a.id_dep = id_dep)
+order by b.den_dep;
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~test~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sa se scrie o cerere care face o list cu angajtii care au salariul mai mare decat
+salariul mediu din departamentul din care fac parte
+lista va contine numai angajatii din departamentul cu cele mai multe salarii mai mari
+decat salariul mediu din departament.
+
+iddep, salariu mediu dep, nume angajat, salariu_angajat
+
+select a.id_dep, b.salariu_mediu_dep, a.nume, a.salariu
+from angajati a,
+	(select avg(salariu) salariu_mediu_dep, id_dep
+	from angajati
+	group by id_dep) b, 
+	(select max(count(*)) nr_angajati, id_dep, salariu
+	from angajati
+	group by id_dep
+	having salariu > (select avg(salariu) salariu_mediu_dep
+				from angajati d
+					join (select avg(salariu) salariu_mediu_dep, id_dep
+						from angajati
+						group by id_dep) e
+					on e.id_dep  = d.id_dep
+				group by id_dep)) c
+where a.salariu > b.salariu_mediu_dep and a.id_dep = c.id_dep;
+
