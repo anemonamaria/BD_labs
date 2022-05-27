@@ -1,0 +1,478 @@
+¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬test3¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+
+ex1
+
+Sa se scrie o cerere SQL care face o lista cu totii angajatii subordonati unui sef dar care
+au venit in companie inaintea lui si nu au primit comision. ID sefului, data angajarii sefului se
+introduc de la tastatura.
+aducem doar nume si data angajare
+
+accept introdu_id_sef char prompt 'Introduceti id-ul sefului:'
+accept introdu_data_angajare_sef char prompt 'Introduceti data angajarii a sefului:'
+
+SELECT nume, data_ang
+	FROM angajati_lab3
+	WHERE data_ang < &introdu_data_angajare AND comision = 0;
+
+undefine introdu_id_sef
+undefine introdu_data_angajare
+
+ex2
+
+Sa se aduca inregistrarile din tabela grila salariu care au nivelul inferior mai mare sau egal decat
+o variabila data de la tastatura si nivelul superior mai mare sau egal decat dublul variabilei initiale.
+!!!!fisier 
+
+accept variabila char prompt 'Introduceti valoarea variabilei:'
+
+SELECT grad, nivel_inf, nivel_sup
+	FROM grila_salariu
+	WHERE nivel_inf >= '&variabila' AND nivel_sup >= 2*'&variabila';
+
+undefine variabila
+
+```````````````````````````````````test4¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬``
+1. Faceti o lista cu toate salariile din depart cu id 10.
+Lista nu tb sa contina duplicate!
+
+SELECT DISTINCT 
+	salariu,
+	id_dep AS departament,
+	nume
+FROM angajati_lab4
+WHERE id_dep = 10;
+
+2. Selectati toti angajatii al caror nume contine cel 
+putin o vocala.
+
+SELECT
+	id_ang AS ecuson,
+	nume,
+	functie
+FROM angajati_lab4
+WHERE nume LIKE '%A%' OR nume LIKE '%E%' OR
+	nume LIKE '%I%' OR nume LIKE '%O%' OR
+	nume LIKE '%U%';   
+
+3. Selectati toti angajatii care au salariul intre 2000 si
+6000 ordonati crescator dupa salarii. Daca au acelasi
+salariu, ordonarea se va face dupa nume invers alfabetica
+
+
+SELECT
+	id_ang AS ecuson,
+	nume,
+	salariu
+FROM angajati_lab4
+WHERE salariu BETWEEN 2000 AND 6000
+ORDER BY 3, 2 DESC;
+
+¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬test5¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬
+
+sa se scrie o cererre sql care face o lista cu toti sefii de deppartament care au 
+subalterni in alt departament decat al lor si subalternii au salariul mai mare decat 
+jumatate din salariul lor
+denumire departament sef
+nume sef
+salariu sef
+nume subalter
+salariu subaltern
+
+
+SELECT 
+	d.den_dep,
+	s.nume,
+	s.salariu,
+	sub.nume, 	
+	sub.salariu
+FROM 
+	angajati s
+	INNER JOIN departamente d
+		ON s.id_dep = d.id_dep
+	INNER JOIN angajati sub
+		ON sub.id_dep != s.id_dep AND sub.salariu > s.salariu / 2 AND sub.id_sef = s.id_ang;
+
+
+
+
+
+
+----------------------test6------------------------------------------
+
+cerinta test
+
+
+1. sa se scrie o cererer sql care face o lista cu angajatii care primesc o prima de 10%
+din salariu. Prima se acorda in fiecare an, in luna in care s-au angajat in companie. Iar
+criteriile pentru acordarea primei sunt:
+-vechime in companie de peste 25 ani
+-angajatii nu trebuie sa fi primit comision
+
+denumire departament, nume angajat, data angajarii, luna prima, salariu, comision si prima
+-prima trebuie rotunjita fara zecimale
+
+
+select d.den_dep, a.nume, a.data_ang, EXTRACT(MONTH from a.data_ang) luna_prima, a.salariu, a.comision,
+	round(a.salariu / 10) prima
+from angajati a
+	inner join departamente d
+		on d.id_dep = a.id_dep
+where ((a.comision = 0 or a.comision IS null) AND (months_between(sysdate, a.data_ang)) > (25 * 12));
+
+
+
+2. pentru fiecare angajat sa se spuna de cate ori apare litera a in sirul format prin 
+concatenarea numelui, al functiei si al departamentului
+
+
+define sir = 'concat(concat(a.nume, a.functie), d.den_dep)';
+
+select &sir sir, (length(&sir) 
+	- length(replace(&sir, 'A', '')) ) lungime, 
+	replace(&sir, 'A', '') modificat
+from angajati a
+	inner join departamente d
+		on d.id_dep = a.id_dep;
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~test7~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+sa se calculeze vechimea angajatilor din departamentele 10 si 20 .
+id dep, nume angajat, data curenta, data angajarii
+nr de ani vechime, nr de luni peste anii intregi, nr de zile peste lunile intregi
+
+
+select id_dep, nume, sysdate data_curenta, data_ang, 
+	floor(months_between(sysdate, data_ang) / 12) ani_vechime, 
+	round(mod(months_between(sysdate, data_ang), 12)) luni_peste,
+	to_char(sysdate, 'DD') - to_char(data_ang, 'DD') zile_peste
+from angajati
+where id_dep = 10 or id_dep = 20;
+	
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~test8~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+sa se scrie o cerere sql care face o lista cu angajatii care au salariul mai
+mare decat jumatate din salariul mediu al directorului si analistilor din departamentul
+lor (salariu mediu se calculeaza fara zecimale)  --->use round. functie = manager, analyst
+coloane: den dep, salariu mediu director si analist, nume angajat, salariu angajat
+salariu mediu dir + salariu mediu analist / 2
+
+select b.den_dep, round((c.salariu_mediu)/ 2) salariu_mediu_dir_analyst, a.nume,
+		a.salariu
+from angajati a join
+		departamente b
+			on a.id_dep = b.id_dep,
+	(select id_dep, avg(salariu) salariu_mediu
+		from angajati
+		where lower(functie) in ('analyst', 'manager')
+		group by id_dep) c
+where a.salariu > round((c.salariu_mediu)/ 2) 
+	and c.id_dep = a.id_dep;
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~test9~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+sa se scrie o cerere care face o list cu angajtii care au salariul mai mare decat
+salariul mediu din departamentul din care fac parte
+lista va contine numai angajatii din departamentul cu cele mai multe salarii mai mari
+decat salariul mediu din departament.
+
+iddep, salariu mediu dep, nume angajat, salariu_angajat
+
+select a.id_dep, b.salariu_mediu_dep, a.nume, a.salariu
+from angajati a,
+	(select avg(salariu) salariu_mediu_dep, id_dep
+	from angajati
+	group by id_dep) b, 
+	(select max(count(*)) nr_angajati, id_dep, salariu
+	from angajati
+	group by id_dep
+	having salariu > (select avg(salariu) salariu_mediu_dep
+				from angajati d
+					join (select avg(salariu) salariu_mediu_dep, id_dep
+						from angajati
+						group by id_dep) e
+					on e.id_dep  = d.id_dep
+				group by id_dep)) c
+where a.salariu > b.salariu_mediu_dep and a.id_dep = c.id_dep;
+
+
+```````````````````````````````````````````````````````````````````````````````````````````
+
+
+/*
+    sa se creeze si sa se populeze o tabela numita PRIMA. Tabela va contine primii
+ trei ang
+    din fieacre departament care s-au angajat cel mai devreme in dep lor si care au
+ cel putin n ani de vechime
+    in firma (n citit de la tast)
+    
+    prima se calc:
+    a. salariul maxim din dep unde lucreaza angajatul daca angajatul nu primeste 
+comision si nu este manager
+    b. salariul minim din dep unde lucreaza angajatul daca angajatul nu primeste 
+comision si este manager
+    c. prima este salariul mediu din dep
+    
+    coloane:
+    NUME_ANG, FUNCTIE, COMISION, DEN_DEP , DATA_ANG, ANI_VECHIME(rotunjit la intreg),
+ PRIMA(rotunjita la 2 zecimale avand la final semnul $) ex. 1556.66$
+*/
+
+
+
+-- ang din fiecare dep cu vechime N ani
+SELECT
+    nume,
+    id_dep,
+    data_ang
+FROM
+    angajati
+GROUP BY id_dep, nume, data_ang
+HAVING
+    MONTHS_BETWEEN(sysdate,data_ang) >= &n*12
+ORDER BY 2;
+    
+-- primii 3 ang din fiecare dep cu vechime N ani
+SELECT
+    a.nume,
+    a.id_dep,
+    a.data_ang
+FROM
+    angajati a
+GROUP BY id_dep, nume, data_ang
+HAVING
+    2 >= (SELECT
+            COUNT(*)
+        FROM
+            angajati b
+        WHERE
+            b.data_ang < a.data_ang
+            AND
+            b.id_dep = a.id_dep)
+    AND
+    MONTHS_BETWEEN(sysdate,a.data_ang) >= &n*12
+ORDER BY 2;
+
+-- calcul prima
+SELECT
+    a.nume,
+    (CASE
+        WHEN a.functie != 'MANAGER' AND nvl(a.comision,0) = 0 (SELECT MAX(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+        WHEN a.functie = 'MANAGER' AND nvl(a.comision,0) = 0 THEN (SELECT MIN(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+        ELSE (SELECT AVG(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+    END) PRIMA
+FROM
+    angajati a;
+    
+-- Final
+SELECT
+    a.nume,
+    a.functie,
+    a.comision,
+    d.den_dep,
+    a.data_ang,
+    ROUND(MONTHS_BETWEEN(sysdate,a.data_ang)/12,0) ANI_VECHIME,
+    ROUND((CASE
+        WHEN a.functie != 'MANAGER' AND nvl(a.comision,0) = 0 THEN (SELECT MAX(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+        WHEN a.functie = 'MANAGER' AND nvl(a.comision,0) = 0 THEN (SELECT MIN(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+        ELSE (SELECT AVG(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+    END),2)||'$' AS PRIMA
+FROM
+    angajati a
+        INNER JOIN departamente d
+            ON a.id_dep = d.id_dep
+WHERE
+    (a.id_dep, a.data_ang) IN (SELECT
+                                    a.id_dep,
+                                    a.data_ang
+                                FROM
+                                    angajati a
+                                GROUP BY id_dep, nume, data_ang
+                                HAVING
+                                    2 >= (SELECT
+                                            COUNT(*)
+                                        FROM
+                                            angajati b
+                                        WHERE
+                                            b.data_ang < a.data_ang
+                                            AND
+                                            b.id_dep = a.id_dep)
+                                    AND
+                                    MONTHS_BETWEEN(sysdate,a.data_ang) >= &n*12);
+                                    
+CREATE table PRIMII
+AS
+SELECT
+    a.nume NUME_ANG,
+    a.functie,
+    a.comision,
+    d.den_dep,
+    a.data_ang,
+    ROUND(MONTHS_BETWEEN(sysdate,a.data_ang)/12,0) ANI_VECHIME,
+    ROUND((CASE
+        WHEN a.functie != 'MANAGER' AND nvl(a.comision,0) = 0 THEN (SELECT MAX(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+        WHEN a.functie = 'MANAGER' AND nvl(a.comision,0) = 0 THEN (SELECT MIN(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+        ELSE (SELECT AVG(b.salariu) FROM angajati b WHERE b.id_dep = a.id_dep)
+    END),2)||'$' AS PRIMA
+FROM
+    angajati a
+        INNER JOIN departamente d
+            ON a.id_dep = d.id_dep
+WHERE
+    (a.id_dep, a.data_ang) IN (SELECT
+                                    a.id_dep,
+                                    a.data_ang
+                                FROM
+                                    angajati a
+                                GROUP BY id_dep, nume, data_ang
+                                HAVING
+                                    2 >= (SELECT
+                                            COUNT(*)
+                                        FROM
+                                            angajati b
+                                        WHERE
+                                            b.data_ang < a.data_ang
+                                            AND
+                                            b.id_dep = a.id_dep)
+                                    AND
+                                    MONTHS_BETWEEN(sysdate,a.data_ang) >= &n*12);
+                                    
+SELECT * from primii;
+drop table primii
+
+
+
+¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬````
+
+
+/*
+Pasi succesivi, subcereri, apoi asamblare
+Sa se scrie o cerere SQL Plus care face o lista cu departamentul
+in care s-au facut cele mai multe angajari intr-un singur an.
+
+Lista va contine denumirea de departament, anul in care s-au facut cele
+mai multe angajari in departamentul respectiv si numarul de angajari.
+
+Pentru rezolvare folositi tabelele emp si dept.
+*/
+
+-- select each department
+select distinct deptno from emp;
+
+-- count employees per department
+select deptno, count(*) as nr_angajari 
+    from emp 
+    group by deptno;
+
+-- count employees per department and year
+select deptno, (extract (year from emp.hiredate)) as an, count(*) as nr_angajari
+    from emp
+    group by deptno,  (extract (year from emp.hiredate))
+    order by deptno;
+
+-- get maximum of nr_angajari from above query
+select max(nr_angajari) from
+    (select deptno, (extract (year from emp.hiredate)) as an, count(*) as nr_angajari
+    from emp
+    group by deptno,  (extract (year from emp.hiredate))
+    order by deptno);
+
+-- get deptno with maximum number of employees in a year
+select emp.deptno, (extract (year from emp.hiredate)) as an
+    from emp emp
+    group by emp.deptno, (extract (year from emp.hiredate))
+    having count(*) = 
+        (select max(nr_angajari) from
+          (select deptno, (extract (year from emp.hiredate)) as an, count(*) as nr_angajari
+            from emp
+            group by deptno,  (extract (year from emp.hiredate))
+            order by deptno));
+
+-- get department with maximum number of employees in a year
+select dept.dname, (extract (year from emp.hiredate)) as an, emp.deptno, count(*) as nr_angajari
+    from emp emp join dept dept
+        on emp.deptno = dept.deptno
+    group by dept.dname, emp.deptno, (extract (year from emp.hiredate))
+    having count(*) = 
+        (select max(nr_angajari) from
+          (select deptno, (extract (year from emp.hiredate)) as an, count(*) as nr_angajari
+            from emp
+            group by deptno,  (extract (year from emp.hiredate))
+            order by deptno));
+
+
+
+````````````````````````````````````````````````````````````````````````````````````````````
+
+Sa se selecteze angajatii care au cele mai mari doua venituri din departamentul cu cei mai 
+multi angajati.  Se va afisa, pentru fiecare angajat, o lista cu antetul:
+
+Nume, Den_departament, Venit
+
+Pentru testare, se va utiliza baza de date formata din tabelele EMP, DEPT si SALGRADE
+
+
+---dep cu cei mai mullti ang
+
+select deptno as id_dep, count(*) as nr_ang 
+from emp 
+group by deptno 
+order by 2 desc 
+fetch first 1 rows only;
+
+--primii doi ang din dep
+
+select a.ename "Nume", d.dname "Den. dep.", a.sal + nvl(a.comm, 0) "Venit"
+from emp a
+	join dept d
+		on a.deptno = d.deptno
+where a.deptno = (select id_dep from (select deptno as id_dep, count(*) as nr_ang 
+				from emp 
+				group by deptno 
+				order by 2 desc 
+				fetch first 1 rows only))
+order by 3 desc
+fetch first 2 rows only;
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`
+
+ Sa se selecteze angajatii care au cele mai mari trei venituri  din departamentul angajatului cu cei mai multi subordonati direct.
+
+Nume, Den_departament, Venit
+
+Seful unui angajat este specificat prin coloana MGR.
+
+Pentru testare, se va utiliza baza de date formata din tabelele EMP, DEPT si SALGRADE.
+
+-nr angajatilor din dep
+select deptno as id_dep, count(*) as nr_ang 
+from emp 
+group by deptno;
+
+--mgr cu cei mai multi subordonati
+
+select mgr, deptno as id_dep from emp group by mgr, deptno
+ having count(empno) = (select max(count(empno)) from emp group by mgr);
+
+
+---ang
+
+select e.ename, d.dname, e.sal + nvl(e.comm, 0) "Venit"
+from emp e
+	join dept d
+		on e.deptno = d.deptno
+where e.deptno = (select id_dep from (select mgr, deptno as id_dep 
+						from emp group by mgr, deptno
+ 						having count(empno) = (select max(count(empno)) 
+									from emp group by mgr)))
+order by 3 desc
+fetch first 3 rows only;
+
+
+
+

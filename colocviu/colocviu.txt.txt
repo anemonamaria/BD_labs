@@ -1,0 +1,68 @@
+enunt:
+
+sa se selecteze angajatii care respecta urmatoarele conditii:
+1. au venit in firma in anul in care s-au facut cele mai multe angajari
+2. fac parte din departamentul cu cei mai multi angajati din firma
+ coloane : nume angajat, denumire departament, salariu, data angajarii
+rez -> 6!
+
+
+rezolvare:
+
+--> cele mai multe angajari
+
+select count(*) , extract(YEAR from a.data_ang) as an_angajare_ang_max
+from angajati a
+group by extract(YEAR from a.data_ang)
+order by 1 desc
+fetch first 1 rows only;
+
+
+--> anul in care s-au facut cele mai multe angajajri
+
+select an_angajare_ang_max
+from (select count(*) , extract(YEAR from a.data_ang) as an_angajare_ang_max
+	from angajati a
+	group by extract(YEAR from a.data_ang)
+	order by 1 desc
+	fetch first 1 rows only);
+
+---> dep cu cei mai multi angajati din firma
+
+select count(*), id_dep as id_dep_ang_max
+from angajati
+group by id_dep
+order by 1 desc
+fetch first 1 rows only;
+
+
+--> dep in care se afla cei mai multi angajati
+
+select id_dep_ang_max
+	from (select count(*), id_dep as id_dep_ang_max
+	from angajati
+	group by id_dep
+	order by 1
+	fetch first 1 rows only);
+
+
+--> angajatii care respecta aceste conditii
+
+select a.nume, d.den_dep, a.salariu, a.data_ang
+from angajati a
+	join departamente d
+		on a.id_dep = d.id_dep
+where a.id_dep = (
+	select id_dep_ang_max
+		from (select count(*), id_dep as id_dep_ang_max
+			from angajati
+			group by id_dep
+			order by 1 desc
+			fetch first 1 rows only))
+and extract(YEAR from a.data_ang) = (select an_angajare_ang_max
+		from (select count(*) , extract(YEAR from a.data_ang) as an_angajare_ang_max
+			from angajati a
+			group by extract(YEAR from a.data_ang)
+			order by 1 desc
+			fetch first 1 rows only));
+
